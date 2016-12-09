@@ -88,7 +88,7 @@ namespace Hi.UrlRewrite.Processing
 					rules.Add(inboundRule);
 				}
 			}
-			else if (ruleOrFolderItem.TemplateID == new ID(new Guid(RedirectSubFolderItem.TemplateId))
+			else if (ruleOrFolderItem.TemplateID == new ID(new Guid(BucketItem.TemplateId)) || ruleOrFolderItem.TemplateID == new ID(new Guid(NodeItem.TemplateId)) || ruleOrFolderItem.TemplateID == new ID(new Guid(RedirectSubFolderItem.TemplateId))
 			         || ruleOrFolderItem.TemplateID == new ID(new Guid(RedirectFolderItem.TemplateId)))
 			{
 				ChildList childRules = ruleOrFolderItem.GetChildren();

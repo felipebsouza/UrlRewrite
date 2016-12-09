@@ -50,7 +50,11 @@ namespace Hi.UrlRewrite.Processing
                     Log.Warn(this, db, "Unable to find UrlRewriter item {0}.", Constants.UrlRewriter_ItemId);
                 }
 
-                return;
+                //Check for static extension and then process
+                if (args.CustomData.ContainsKey(Constants.StaticExtensionKey) && requestResult.MatchedAtLeastOneRule)
+                {
+                    HandleSpecialExtensions(httpContext, requestResult);
+                }
             }
             catch (ThreadAbortException)
             {
@@ -92,6 +96,12 @@ namespace Hi.UrlRewrite.Processing
             }
 
             return inboundRules;
+        }
+
+        private static void HandleSpecialExtensions(HttpContextWrapper context, ProcessInboundRulesResult result)
+        {
+            var inboundRewriter = new InboundRewriter();
+            inboundRewriter.ExecuteResult(context, result, false);
         }
     }
 }
