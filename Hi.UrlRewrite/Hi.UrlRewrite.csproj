@@ -221,6 +221,8 @@
     <Compile Include="Templates\Conditions\Types\CheckIfInputStringTypeItem.cs" />
     <Compile Include="Templates\Conditions\Types\ConditionInputTypeItem.cs" />
     <Compile Include="Templates\Conditions\Types\LogicalGroupingTypeItem.cs" />
+    <Compile Include="Templates\Folders\BucketItem.cs" />
+    <Compile Include="Templates\Folders\NodeItem.cs" />
     <Compile Include="Templates\Match\MatchServerVariableItem.cs" />
     <Compile Include="Templates\Match\MatchTagItem.cs" />
     <Compile Include="Templates\Match\MatchResponseTagsItem.cs" />

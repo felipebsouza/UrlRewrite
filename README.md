@@ -9,7 +9,18 @@ In addition to adding Site specific redirect capabilities, I have modeled the da
 Changelog
 =========
 
-Varsion 1.8.2 - https://github.com/iamandycohen/UrlRewrite/releases/tag/v1.8.2
+Improvements by  Martin English http://sitecoreart.martinrayenglish.com/2016/12/implementing-3000-redirects-in-sitecore.html 
+* Allowed handling of bucketed items and special extensions via UrlRewriteHandler.
+  * Example PDF handling in web.config:
+
+    `<handlers>
+ <add name="UrlRewritePdfHandler" path="*.pdf" verb="*" type="Hi.UrlRewrite.Processing.UrlRewriteHandler" resourceType="Unspecified" preCondition="integratedMode" />
+</handlers>`
+
+* Allowed handling of host redirects. Example: test.mysite.com/nicepath => test.mytarget.com/newnewpath
+
+
+Version 1.8.2 - https://github.com/iamandycohen/UrlRewrite/releases/tag/v1.8.2
 * Added support for Sitecore 8.2
 
 Varsion 1.8.1.3 - https://github.com/iamandycohen/UrlRewrite/releases/tag/v1.8.1.3
