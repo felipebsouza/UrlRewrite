@@ -101,7 +101,7 @@ namespace Hi.UrlRewrite.Processing
             }
         }
 
-        public void ExecuteResult(HttpContextBase httpContext, ProcessInboundRulesResult ruleResult)
+        public void ExecuteResult(HttpContextBase httpContext, ProcessInboundRulesResult ruleResult, bool trackRedirect = true)
         {
             var httpRequest = httpContext.Request;
             var httpResponse = httpContext.Response;
@@ -123,7 +123,7 @@ namespace Hi.UrlRewrite.Processing
 
             if (ruleResult.FinalAction is IBaseRedirect)
             {
-                if (Configuration.AnalyticsTrackingEnabled)
+                if (Configuration.AnalyticsTrackingEnabled && trackRedirect)
                 {
                     Tracking.TrackRedirect(ruleResult);
                 }
@@ -186,6 +186,8 @@ namespace Hi.UrlRewrite.Processing
 
             }
 
+            Log.Debug(this, "Processing inbound rule - requestUri: {0} rewrittenUrl: {1} status code: {2}", ruleResult.OriginalUri, ruleResult.RewrittenUri, httpResponse.StatusCode);
+
             httpResponse.End();
         }
 
@@ -233,7 +235,7 @@ namespace Hi.UrlRewrite.Processing
                 lastConditionMatch = null;
 
             // test rule match
-            var isInboundRuleMatch = TestRuleMatches(inboundRule, originalUri, out inboundRuleMatch);
+            var isInboundRuleMatch = TestAllRuleMatches(inboundRule, originalUri, out inboundRuleMatch);
             ConditionMatchResult conditionMatchResult = null;
 
             // test conditions matches
@@ -303,13 +305,25 @@ namespace Hi.UrlRewrite.Processing
             return ruleResult;
         }
 
-        private bool TestRuleMatches(InboundRule inboundRule, Uri originalUri, out Match inboundRuleMatch)
-        {
-            var absolutePath = originalUri.AbsolutePath;
-            var uriPath = absolutePath.Substring(1); // remove starting "/"
+        private bool TestAllRuleMatches(InboundRule inboundRule, Uri originalUri, out Match inboundRuleMatch)
+        {   
+            var haveMatch = TestRuleMatches(inboundRule, originalUri, out inboundRuleMatch, false);
 
-            var escapedAbsolutePath = HttpUtility.UrlDecode(absolutePath);
-            var escapedUriPath = (escapedAbsolutePath ?? string.Empty).Substring(1); // remove starting "/"
+            //If no match, let's include the host and try again
+            if (!haveMatch)
+            {
+                haveMatch = TestRuleMatches(inboundRule, originalUri, out inboundRuleMatch, true);
+            }
+
+            return haveMatch;
+        }
+
+        private bool TestRuleMatches(InboundRule inboundRule, Uri originalUri, out Match inboundRuleMatch, bool includeHost)
+        {
+            var pathToCheck = includeHost ? originalUri.Host + originalUri.PathAndQuery : originalUri.AbsolutePath.Substring(1);
+                
+            var escapedPath = HttpUtility.UrlDecode(pathToCheck);
+            //var escapedUriPath = includeHost ? escapedPath : (escapedPath ?? string.Empty).Substring(1); // remove starting "/"
 
             // TODO : I have only implemented "MatchesThePattern" - need to implement the other types
             var matchesThePattern = inboundRule.MatchType.HasValue &&
@@ -330,23 +344,23 @@ namespace Hi.UrlRewrite.Processing
 
             var inboundRuleRegex = new Regex(pattern, inboundRule.IgnoreCase ? RegexOptions.IgnoreCase : RegexOptions.None);
 
-            inboundRuleMatch = inboundRuleRegex.Match(uriPath);
+            inboundRuleMatch = inboundRuleRegex.Match(pathToCheck);
             bool isInboundRuleMatch = matchesThePattern ? inboundRuleMatch.Success : !inboundRuleMatch.Success;
 
-            Log.Debug(this, "Regex - Pattern: '{0}' Input: '{1}' Success: {2}", pattern, uriPath,
+            Log.Debug(this, "Regex - Pattern: '{0}' Input: '{1}' Success: {2}", pattern, pathToCheck,
                     isInboundRuleMatch);
 
-            if (!isInboundRuleMatch && !uriPath.Equals(escapedUriPath, StringComparison.InvariantCultureIgnoreCase))
+            if (!isInboundRuleMatch && !pathToCheck.Equals(escapedPath, StringComparison.InvariantCultureIgnoreCase))
             {
-                inboundRuleMatch = inboundRuleRegex.Match(escapedUriPath);
+                inboundRuleMatch = inboundRuleRegex.Match(escapedPath);
                 isInboundRuleMatch = matchesThePattern ? inboundRuleMatch.Success : !inboundRuleMatch.Success;
 
-                Log.Debug(this, "Regex - Pattern: '{0}' Input: '{1}' Success: {2}", pattern, escapedUriPath,
+                Log.Debug(this, "Regex - Pattern: '{0}' Input: '{1}' Success: {2}", pattern, escapedPath,
                         isInboundRuleMatch);
             }
             return isInboundRuleMatch;
         }
-
+        
         private bool TestSiteNameRestriction(InboundRule inboundRule)
         {
             var currentSiteName = Sitecore.Context.Site.Name;

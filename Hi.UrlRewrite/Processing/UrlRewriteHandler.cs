@@ -24,6 +24,9 @@ namespace Hi.UrlRewrite.Processing
                 var requestArgs = new HttpRequestArgs(context, HttpRequestType.Begin);
                 var requestUri = context.Request.Url;
 
+                //Pass along the static extension to make the InboundRewriteProcessor aware
+                requestArgs.CustomData.Add(Constants.StaticExtensionKey, context.Request.CurrentExecutionFilePathExtension);
+
                 var siteContext = SiteContextFactory.GetSiteContext(requestUri.Host, requestUri.AbsolutePath,
                     requestUri.Port);
 
