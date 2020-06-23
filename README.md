@@ -12,6 +12,13 @@ Sitecore Support: "Creation of custom segments is not supported by the Experienc
 Changelog
 =========
 
+Version 2 - https://github.com/felipebsouza/UrlRewrite/releases/tag/v2
+
+* Reverted code updates to Sitecore 8.2 to be compatible with Sitecore 8.1 which would cause the error: "Method not found: 'Sitecore.Caching.ICache Sitecore.Caching.CustomCache.get_InnerCache()')".
+* Added back field "Site Name Restriction" of Rewrite Folder which has gone missing on the latest version 1.8.2 and was throwing an error "inner field can not be null".
+* Added changes made by Martin English supporting rewrite of static files.
+
+
 Improvements by  Martin English http://sitecoreart.martinrayenglish.com/2016/12/implementing-3000-redirects-in-sitecore.html 
 * Allowed handling of bucketed items and special extensions via UrlRewriteHandler.
   * Example PDF handling in web.config:
