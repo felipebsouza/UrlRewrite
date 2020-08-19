@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>Hi.UrlRewrite</id>
+    <version>2.0.0.1</version>
+    <title>Hi.UrlRewrite</title>
+    <authors>Andy Cohen, Martin English, Felipe Bittencourt</authors>
+    <owners>felipeb</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/felipebsouza/UrlRewrite/tree/sc81</projectUrl>
+    <description>URL Rewrite Module for Sitecore 8.1</description>
+    <releaseNotes>Added support to redirect static files and readded support to Sitecore 8.1</releaseNotes>
+    <copyright>Copyright 2020</copyright>
+    <tags>Sitecore UrlRewrite Rewrite Redirect 301 SEO</tags>
+  </metadata>
+</package>
